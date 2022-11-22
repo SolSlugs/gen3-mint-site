@@ -180,7 +180,8 @@ export const getCandyMachineState = async (
   };
 
   const getCurrentBlockTime = async (): Promise<number> => {
-    const slot = await connection.getSlot();
+    /* handle node lag */
+    const slot = await connection.getSlot() - 100;
     return (await connection.getBlockTime(slot)) ?? new Date().getTime() / 1000;
   };
 
