@@ -6,5 +6,13 @@ const config = {
       "@babel/plugin-transform-shorthand-properties",
     ],
   },
+  style: {
+    postcss: {
+      plugins: [
+        require('tailwindcss'),
+        require('autoprefixer'),
+      ],
+    },
+  },
 };
 export default config;

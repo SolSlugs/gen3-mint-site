@@ -1,4 +1,5 @@
 import "./App.css";
+import './WalletAdapter.css';
 import { useMemo } from "react";
 import * as anchor from "@project-serum/anchor";
 import Home from "./Home";
@@ -10,9 +11,8 @@ import {
   ConnectionProvider,
   WalletProvider,
 } from "@solana/wallet-adapter-react";
-import { WalletDialogProvider } from "@solana/wallet-adapter-material-ui";
+import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 
-import { createTheme, ThemeProvider } from "@mui/material";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import { SlopeWalletAdapter } from "@solana/wallet-adapter-slope";
 import { SolflareWalletAdapter } from "@solana/wallet-adapter-solflare";
@@ -20,12 +20,6 @@ import {
   SolletWalletAdapter,
   SolletExtensionWalletAdapter,
 } from "@solana/wallet-adapter-sollet";
-
-const theme = createTheme({
-  palette: {
-    mode: "dark",
-  },
-});
 
 const getCandyMachineId = (): anchor.web3.PublicKey | undefined => {
   try {
@@ -68,10 +62,9 @@ const App = () => {
   );
 
   return (
-    <ThemeProvider theme={theme}>
       <ConnectionProvider endpoint={endpoint}>
         <WalletProvider wallets={wallets} autoConnect>
-          <WalletDialogProvider>
+          <WalletModalProvider>
             <Home
               candyMachineId={candyMachineId}
               connection={connection}
@@ -80,10 +73,9 @@ const App = () => {
               network={network}
               error={error}
             />
-          </WalletDialogProvider>
+          </WalletModalProvider>
         </WalletProvider>
       </ConnectionProvider>
-    </ThemeProvider>
   );
 };
 
