@@ -440,11 +440,11 @@ const Home = (props: HomeProps) => {
                             alignItems: 'center',
                         }}
                     >
-                        <span className='text-primary font-header text-lg'>
+                        <span className='text-primary font-header text-lg' style={{ textAlign: 'center' }}>
                             Items Remaining
                         </span>
 
-                        <span className='text-primary' style={{ fontSize: '28px' }}>
+                        <span className='text-primary' style={{ fontSize: '28px', textAlign: 'center' }}>
                             {itemsRemaining}
                         </span>
                     </div>
@@ -457,11 +457,11 @@ const Home = (props: HomeProps) => {
                             alignItems: 'center',
                         }}
                     >
-                        <span className='text-primary font-header text-lg'>
+                        <span className='text-primary font-header text-lg' style={{ textAlign: 'center' }}>
                             Price
                         </span>
 
-                        <span className='text-primary' style={{ fontSize: '28px' }}>
+                        <span className='text-primary' style={{ fontSize: '28px', textAlign: 'center' }}>
                             Free with Gen 3 Mint Token
                         </span>
                     </div>
@@ -474,11 +474,11 @@ const Home = (props: HomeProps) => {
                             alignItems: 'center',
                         }}
                     >
-                        <span className='text-primary font-header text-lg'>
+                        <span className='text-primary font-header text-lg' style={{ textAlign: 'center' }}>
                             Your Mint Token Balance
                         </span>
 
-                        <span className='text-primary' style={{ fontSize: '28px' }}>
+                        <span className='text-primary' style={{ fontSize: '28px', textAlign: 'center' }}>
                             {balance}
                         </span>
                     </div>
