@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useMemo } from 'react';
 import * as anchor from '@project-serum/anchor';
 
 import { Snackbar } from '@mui/material';
@@ -52,6 +52,10 @@ const Home = (props: HomeProps) => {
     const [needTxnSplit, setNeedTxnSplit] = useState(true);
     const [setupTxn, setSetupTxn] = useState<SetupState>();
     const [balance, setBalance] = useState<number>(0);
+
+    const canMint = useMemo(() => {
+        return isActive || (isPresale && isWhitelistUser && isValidBalance);
+    }, [isActive, isPresale, isWhitelistUser, isValidBalance]);
 
     const rpcUrl = props.rpcHost;
     const anchorWallet = useAnchorWallet();
@@ -471,21 +475,31 @@ const Home = (props: HomeProps) => {
                 </div>
             )}
 
-            <div style={{ marginTop: '40px' }} className='flex items-center justify-center'>
-                {candyMachine?.state.isActive &&
-                candyMachine?.state.gatekeeper &&
-                publicKey &&
-                anchorWallet?.signTransaction ? (
-                    <GatewayProvider
-                        wallet={{
-                            publicKey: publicKey || new PublicKey(CANDY_MACHINE_PROGRAM),
-                            signTransaction: anchorWallet.signTransaction,
-                        }}
-                        gatekeeperNetwork={candyMachine?.state?.gatekeeper?.gatekeeperNetwork}
-                        clusterUrl={rpcUrl}
-                        cluster={cluster}
-                        options={{ autoShowModal: false }}
-                    >
+            {canMint && (
+                <div style={{ marginTop: '40px' }} className='flex items-center justify-center'>
+                    {candyMachine?.state.isActive &&
+                    candyMachine?.state.gatekeeper &&
+                    publicKey &&
+                    anchorWallet?.signTransaction ? (
+                        <GatewayProvider
+                            wallet={{
+                                publicKey: publicKey || new PublicKey(CANDY_MACHINE_PROGRAM),
+                                signTransaction: anchorWallet.signTransaction,
+                            }}
+                            gatekeeperNetwork={candyMachine?.state?.gatekeeper?.gatekeeperNetwork}
+                            clusterUrl={rpcUrl}
+                            cluster={cluster}
+                            options={{ autoShowModal: false }}
+                        >
+                            <MintButton
+                                candyMachine={candyMachine}
+                                isMinting={isUserMinting}
+                                setIsMinting={(val) => setIsUserMinting(val)}
+                                onMint={onMint}
+                                isActive={isActive || (isPresale && isWhitelistUser && isValidBalance)}
+                            />
+                        </GatewayProvider>
+                    ) : (
                         <MintButton
                             candyMachine={candyMachine}
                             isMinting={isUserMinting}
@@ -493,17 +507,17 @@ const Home = (props: HomeProps) => {
                             onMint={onMint}
                             isActive={isActive || (isPresale && isWhitelistUser && isValidBalance)}
                         />
-                    </GatewayProvider>
-                ) : (
-                    <MintButton
-                        candyMachine={candyMachine}
-                        isMinting={isUserMinting}
-                        setIsMinting={(val) => setIsUserMinting(val)}
-                        onMint={onMint}
-                        isActive={isActive || (isPresale && isWhitelistUser && isValidBalance)}
-                    />
-                )}
-            </div>
+                    )}
+                </div>
+            )}
+
+            {!canMint && (
+                <div style={{ marginTop: '40px' }} className='flex items-center justify-center'>
+                    <span className='text-primary' style={{ fontSize: '36px' }}>
+                        Unfortunately, it looks like you have no gen 3 mint tokens remaining.
+                    </span>
+                </div>
+            )}
         </>
     );
 
