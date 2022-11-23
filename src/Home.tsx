@@ -5,7 +5,7 @@ import { Snackbar } from '@mui/material';
 import Alert from '@mui/lab/Alert';
 import { Commitment, Connection, PublicKey, Transaction } from '@solana/web3.js';
 import { useAnchorWallet, useWallet } from '@solana/wallet-adapter-react';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { WalletMultiButton, WalletDisconnectButton } from '@solana/wallet-adapter-react-ui';
 import {
     awaitTransactionSignatureConfirmation,
     CANDY_MACHINE_PROGRAM,
@@ -51,7 +51,7 @@ const Home = (props: HomeProps) => {
     const [, setDiscountPrice] = useState<anchor.BN>();
     const [needTxnSplit, setNeedTxnSplit] = useState(true);
     const [setupTxn, setSetupTxn] = useState<SetupState>();
-    const [balance, setBalance] = useState<number>(0);
+    const [balance, setBalance] = useState<number | null>(null);
 
     const canMint = useMemo(() => {
         return isActive || (isPresale && isWhitelistUser && isValidBalance);
@@ -410,6 +410,16 @@ const Home = (props: HomeProps) => {
         </WalletMultiButton>
     );
 
+    const disconnectComponent = (
+        <WalletDisconnectButton
+            className={walletButtonClasses}
+        >
+            <span className={walletTextClasses}>
+                Disconnect Wallet
+            </span>
+        </WalletDisconnectButton>
+    );
+
     const connectedComponent = (
         <>
             {candyMachine && (
@@ -511,7 +521,7 @@ const Home = (props: HomeProps) => {
                 </div>
             )}
 
-            {!canMint && (
+            {!canMint && balance !== null && (
                 <div style={{ marginTop: '40px' }} className='flex items-center justify-center'>
                     <span className='text-primary' style={{ fontSize: '36px' }}>
                         Unfortunately, it looks like you have no gen 3 mint tokens remaining.
@@ -524,7 +534,11 @@ const Home = (props: HomeProps) => {
     return (
         <div className='flex flex-column items-center justify-center'>
             <div className='w-4/5 mt-20 items-center justify-center'>
-                {!connected ? connectComponent : connectedComponent}
+                <div className='flex' style={{ marginBottom: '40px', justifyContent: 'end' }}>
+                    {!connected ? connectComponent : disconnectComponent}
+                </div>
+
+                {connected && connectedComponent}
 
                 <Snackbar
                     open={alertState.open}
