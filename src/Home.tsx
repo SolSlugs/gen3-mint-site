@@ -533,8 +533,12 @@ const Home = (props: HomeProps) => {
 
     return (
         <div className='flex flex-column items-center justify-center'>
-            <div className='w-4/5 mt-20 items-center justify-center'>
-                <div className='flex' style={{ marginBottom: '40px', justifyContent: 'end' }}>
+            <div className='w-4/5 flex mt-20 items-center justify-center' style={{ flexDirection: 'column' }}>
+                <span className='font-header text-primary'>
+                    Gen 3 Mint!
+                </span>
+
+                <div className='flex' style={{ marginBottom: '40px', marginTop: '20px', justifyContent: 'end', width: '100%' }}>
                     {!connected ? connectComponent : disconnectComponent}
                 </div>
 
