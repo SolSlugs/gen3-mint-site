@@ -20,6 +20,7 @@ import { AlertState, getAtaForMint } from './utils';
 import { MintButton } from './MintButton';
 import { GatewayProvider } from '@civic/solana-gateway-react';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
+import Sealab from './sealab.mp3';
 
 const walletButtonClasses = '!border-solid !border-2 md:!border-[3.5px] !border-primary !rounded-md !min-w-64 !h-10 !p-0 !bg-transparent !flex !flex-row !flex-nowrap !text-sm sm:!text-base !items-center !justify-center !font-normal';
 
@@ -52,6 +53,7 @@ const Home = (props: HomeProps) => {
     const [needTxnSplit, setNeedTxnSplit] = useState(true);
     const [setupTxn, setSetupTxn] = useState<SetupState>();
     const [balance, setBalance] = useState<number | null>(null);
+    const [isPlaying, setIsPlaying] = useState(false);
 
     const canMint = useMemo(() => {
         return isActive || (isPresale && isWhitelistUser && isValidBalance);
@@ -61,6 +63,55 @@ const Home = (props: HomeProps) => {
     const anchorWallet = useAnchorWallet();
     const { connected, publicKey } = useWallet();
     const cluster = props.network;
+
+    const play = useCallback(() => {
+        if (isPlaying) {
+            return;
+        }
+
+        const audio = document.getElementById('audio');
+
+        if (!audio) {
+            return;
+        }
+
+        const a = audio as HTMLAudioElement;
+
+        a.volume = 0.5;
+        a.play();
+
+        setIsPlaying(true);
+    }, [isPlaying]);
+
+    const playOnce = useCallback(() => {
+        play();
+
+        document.removeEventListener('click', playOnce);
+        document.removeEventListener('scroll', playOnce);
+    }, [play]);
+
+    useEffect(() => {
+        document.addEventListener('click', playOnce, { once: true });
+        document.addEventListener('scroll', playOnce, { once: true });
+    }, []);
+
+    function stop() {
+        if (!isPlaying) {
+            return;
+        }
+
+        const audio = document.getElementById('audio');
+
+        if (!audio) {
+            return;
+        }
+
+        const a = audio as HTMLAudioElement;
+
+        a.pause();
+
+        setIsPlaying(false);
+    }
 
     const refreshCandyMachineState = useCallback(
         async (commitment: Commitment = 'confirmed') => {
@@ -532,7 +583,16 @@ const Home = (props: HomeProps) => {
     );
 
     return (
-        <div className='flex flex-column items-center justify-center'>
+        <div className='flex items-center justify-center' style={{ flexDirection: 'column' }}>
+            <audio
+                style={{
+                    display: 'hidden',
+                }}
+                src={Sealab}
+                id='audio'
+                loop
+            />
+
             <div className='w-4/5 flex mt-20 items-center justify-center' style={{ flexDirection: 'column' }}>
                 <span className='font-header text-primary'>
                     Gen 3 Mint!
@@ -554,6 +614,14 @@ const Home = (props: HomeProps) => {
                     </Alert>
                 </Snackbar>
             </div>
+
+            <button
+                onClick={isPlaying ? stop : play}
+                className='!border-solid !border-2 md:!border-[3.5px] !border-primary !rounded-md !bg-transparent !flex !flex-row !flex-nowrap !text-sm sm:!text-base !items-center !justify-center !font-normal text-white px-3 font-header text-xs sm:text-sm md:text-lg whitespace-nowrap only:ml-0'
+                style={{ marginTop: '80px', padding: '10px' }}
+            >
+                {isPlaying ? 'Stop Music' : 'Play Music'}
+            </button>
         </div>
     );
 };
